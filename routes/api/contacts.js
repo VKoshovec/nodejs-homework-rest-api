@@ -2,20 +2,21 @@ const express = require('express');
 const Joi = require("joi");
 const contacts = require('../../models/contacts');
 const HttpErr = require('../../helpers/HttpErorr');
+const { object } = require('joi');
 
 const addSchema = Joi.object({
   name: Joi.string().required().messages({
-      "any.required": `name is required`,
+      "any.required": `missing required name field`,
       "string.empty": `name cannot be empty`,
       "string.base": `name must be string`
   }),
   email: Joi.string().required().messages({
-      "any.required": `email is required`,
+      "any.required": `missing required email field`,
       "string.empty": `email cannot be empty`,
       "string.base": `email must be string`
   }),
   phone: Joi.string().required().messages({
-      "any.required": `phone is required`,
+      "any.required": `missing required phone field`,
       "string.empty": `phone cannot be empty`,
       "string.base": `phone must be string`
 }),
@@ -49,6 +50,10 @@ router.get('/:contactId', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
   try {
 
+    if(Object.keys(req.body).length === 0) { 
+      throw HttpErr(400, "missing fields")
+    };
+
     const {error} = addSchema.validate(req.body);
 
     if(error) {
@@ -56,7 +61,7 @@ router.post('/', async (req, res, next) => {
     };
 
     const result = await contacts.addContact(req.body);
-    res.status(200).json(result);
+    res.status(201).json(result);
 
   } catch (error) {
     next(error);
@@ -81,6 +86,10 @@ router.delete('/:contactId', async (req, res, next) => {
 
 router.put('/:contactId', async (req, res, next) => {
   try {
+
+    if(Object.keys(req.body).length === 0) { 
+      throw HttpErr(400, "missing fields")
+    };
 
     const {error} = addSchema.validate(req.body);
 
