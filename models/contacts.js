@@ -1,4 +1,3 @@
-// const fs = require('fs/promises')
 const { nanoid } = require('nanoid');
 const path = require('path');
 const fs = require('fs').promises;
@@ -54,7 +53,7 @@ const addContact = async (body) => {
   };
 }
 
-const updateContact = async ( id, body) => {
+const updateContact = async (id, body) => {
    try {
 
     const contacts = await listContacts();
@@ -64,7 +63,9 @@ const updateContact = async ( id, body) => {
         return null;
     };
 
-    contacts[index] = { id, ...body};
+    const prevBody = contacts[index];
+
+    contacts[index] = { id, ...prevBody, ...body };
     await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
     return contacts[index];
     
