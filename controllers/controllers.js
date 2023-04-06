@@ -1,78 +1,74 @@
-const { Contacts } = require('../models/contacts');
-const HttpErr = require('../helpers/HttpErorr')
+const { Contacts, checkId } = require('../models/contacts');
 
-async function listContacts ( req, res, next) {
-    try {
+const HttpErr = require('../helpers/HttpErorr');
+const controlWrapper  = require('../helpers/controlsWrapper');
+
+async function listContacts ( req, res) {
       const result = await Contacts.find({});
       res.json(result);
-    } catch (error) {
-      next(error);
-    }
 };
 
-// async function getContactById (req, res, next) {
-//     try {
-//       const { contactId } = req.params;
-//       const result = await contacts.getContactById(contactId);
-     
-//       if(!result) {throw HttpErr(404)};  
-  
-//       res.json(result);
-  
-//     } catch (error) {
-//       next(error);
-//     }
-// };
+async function getContactById (req, res) {
+      const { contactId } = req.params;    
 
-// async function dellContact (req, res, next) {
-//     try {
-//       const { contactId } = req.params;
-//       result = await contacts.removeContact(contactId);
-  
-//       if(!result) {throw HttpErr(404)};
-  
-//       res.status(200).json({
-//         "message": "contact deleted"
-//       });
-  
-//     } catch (error) {
-//       next(error);
-//     }
-// };
+      checkId(contactId, HttpErr(400));
 
-// async function addContact (req, res, next) {
-//     try {
-    
-//       const result = await contacts.addContact(req.body);
-//       res.status(201).json(result);
+      const result = await Contacts.findById(contactId);
+      if(!result) { throw HttpErr(404) };  
   
-//     } catch (error) {
-//       next(error);
-//     }
-// };
+      res.json(result);
+};
 
-// async function updContact (req, res, next) {
+async function dellContact (req, res) {
+      const { contactId } = req.params;
 
-// try {
-//       const { contactId } = req.params;  
-//       const result = await contacts.updateContact( contactId, req.body );
+      checkId(contactId, HttpErr(400));
+
+      result = await Contacts.findByIdAndDelete(contactId);
+      if(!result) {throw HttpErr(404)};
   
-//       if(!result) {
-//           throw HttpErr(404);
-//       }
+      res.status(200).json({
+        "message": "contact deleted"
+      });
+};
+
+async function addContact (req, res) {
+      const result = await Contacts.create(req.body);
+      res.status(201).json(result);
+};
+
+async function updContact (req, res)  {
+      const { contactId } = req.params;  
+
+      checkId(contactId, HttpErr(400));
+
+      const result = await Contacts.findByIdAndUpdate( contactId, req.body, { new: true});
+      if(!result) {
+          throw HttpErr(404);
+      }
   
-//       res.json(result);
-// }
-//   catch(error) {
-//       next(error);
-// }
-  
-//   }
+      res.json(result);
+};
+
+async function updateStatusContact (req, res) {
+
+    const { contactId } = req.params;  
+
+    checkId(contactId, HttpErr(400));
+
+    const result = await Contacts.findByIdAndUpdate( contactId, req.body, { new: true});
+    if(!result) {
+        throw HttpErr(404);
+    }
+
+    res.json(result);
+};
 
 module.exports = {
-    listContacts,
-    // getContactById,
-    // dellContact,
-    // addContact,
-    // updContact
+    listContacts: controlWrapper(listContacts),
+    getContactById: controlWrapper(getContactById),
+    dellContact: controlWrapper(dellContact),
+    addContact: controlWrapper(addContact),
+    updContact: controlWrapper(updContact),
+    updateStatusContact: controlWrapper(updateStatusContact)
 };
