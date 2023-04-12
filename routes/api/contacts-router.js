@@ -1,6 +1,6 @@
 const express = require('express');
-const { validatePostData, validatePutData, validateFavoriteData } = require('../../validators/validateData');
-const controllers = require('../../controllers/controllers');
+const { validatePostData, validatePutData, validateFavoriteData } = require('../../validators/validateContactsData');
+const controllers = require('../../controllers/contactsControllers');
  
 const router = express.Router();
 
