@@ -17,9 +17,14 @@ const addSchema = Joi.object({
         "string.empty": `phone cannot be empty`,
         "string.base": `phone must be string`
   }),
-  });
-  
+    favorite: Joi.boolean()
+});
+
 const putSchema = Joi.object().min(1);
+  
+const updFavoriteSchema = Joi.object({
+  favorite: Joi.boolean().required()
+}).min(1);
 
 
 function validatePostData (req, res, next) {
@@ -46,7 +51,19 @@ function validatePutData (req, res, next) {
 
 };
 
+function validateFavoriteData (req, res, next) {
+
+  const {error} = updFavoriteSchema.validate(req.body);
+
+  if(error) {
+    throw HttpErr(400, "missing field favorite");
+  };
+
+  next();
+}
+
 module.exports = {
   validatePostData,
-  validatePutData
+  validatePutData,
+  validateFavoriteData
 };
