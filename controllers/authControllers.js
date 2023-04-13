@@ -49,9 +49,31 @@ async function loginUser (req, res) {
         "subscription": result.subscription,}
    });
 
-}
+};
+
+async function logoutUser (req, res) {
+
+    const {_id} = req.user;
+
+    await Users.findByIdAndUpdate(_id, { token: "" });
+
+    res.status(204).json();
+
+};
+
+async function currentUser (req, res) {
+    const { _id } = req.user;
+
+    const{ email, subscription } = await Users.findById(_id);
+
+    res.json({
+        email, subscription
+    });
+};
 
 module.exports = {
     registerUser: controlWrapper(registerUser),
     loginUser: controlWrapper(loginUser),
+    logoutUser: controlWrapper(logoutUser),
+    currentUser: controlWrapper(currentUser),
 };
