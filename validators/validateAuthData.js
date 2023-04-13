@@ -15,7 +15,7 @@ const regSchema = Joi.object({
 });
 
 const updSubscriptSchema = Joi.object({
-    subscription: Joi.any().valid('starter','pro', 'business').required(),
+    subscription: Joi.any().valid('starter', 'pro', 'business').required(),
 }).required();
 
 

@@ -8,7 +8,7 @@ async function authorization (req, res, next) {
   const [bearer, token] = authorization.split(" ");
 
     if (bearer !== "Bearer") {
-        next(HttpError(401));
+        next(HttpErr(401));
     };
 
     try {

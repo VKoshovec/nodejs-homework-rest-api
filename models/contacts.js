@@ -1,4 +1,4 @@
-const { Schema, model, Types } = require('mongoose');
+const { Schema, model} = require('mongoose');
 
 const contactsSchema = new Schema({
         name: {
@@ -26,13 +26,8 @@ contactsSchema.post("save", (error, data, next)=> {
   next();
 });
 
-const checkId = (contactId, errAction) => {
-  if( !Types.ObjectId.isValid( contactId ) ) throw errAction ;
-}
-
 const Contacts = model("contacts", contactsSchema);
 
 module.exports = {
-    Contacts,
-    checkId
+    Contacts
 };

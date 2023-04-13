@@ -1,4 +1,4 @@
-const { Contacts, checkId } = require('../models/contacts');
+const { Contacts } = require('../models/contacts');
 
 const HttpErr = require('../helpers/HttpErorr');
 const controlWrapper  = require('../helpers/controlsWrapper');
@@ -21,8 +21,6 @@ async function listContacts ( req, res) {
 async function getContactById (req, res) {
       const { contactId } = req.params;    
 
-      checkId(contactId, HttpErr(404));
-
       const result = await Contacts.findById(contactId);
       if(!result) { throw HttpErr(404) };  
   
@@ -31,8 +29,6 @@ async function getContactById (req, res) {
 
 async function dellContact (req, res) {
       const { contactId } = req.params;
-
-      checkId(contactId, HttpErr(404));
 
       result = await Contacts.findByIdAndDelete(contactId);
       if(!result) {throw HttpErr(404)};
@@ -53,8 +49,6 @@ async function addContact (req, res) {
 async function updContact (req, res)  {
       const { contactId } = req.params;  
 
-      checkId(contactId, HttpErr(404));
-
       const result = await Contacts.findByIdAndUpdate( contactId, req.body, { new: true});
       if(!result) {
           throw HttpErr(404);
@@ -66,8 +60,6 @@ async function updContact (req, res)  {
 async function updateStatusContact (req, res) {
 
     const { contactId } = req.params;  
-
-    checkId(contactId, HttpErr(404));
 
     const result = await Contacts.findByIdAndUpdate( contactId, req.body, { new: true});
     if(!result) {
