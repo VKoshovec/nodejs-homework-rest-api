@@ -71,9 +71,23 @@ async function currentUser (req, res) {
     });
 };
 
+async function updateUserSubscript (req, res) {
+
+   const { _id } = req.user;
+
+   const result = await Users.findByIdAndUpdate( _id, req.body, { new: true } );
+  
+   res.status(200).json({
+        "email": result.email,
+        "subscription": result.subscription
+   });
+
+};
+
 module.exports = {
     registerUser: controlWrapper(registerUser),
     loginUser: controlWrapper(loginUser),
     logoutUser: controlWrapper(logoutUser),
     currentUser: controlWrapper(currentUser),
+    updateUserSubscript: controlWrapper(updateUserSubscript),
 };

@@ -14,6 +14,10 @@ const regSchema = Joi.object({
     }),  
 });
 
+const updSubscriptSchema = Joi.object({
+    subscription: Joi.any().valid('starter','pro', 'business').required(),
+}).required();
+
 
 function validateRegistrationLogin (req, res, next) {
 
@@ -27,7 +31,20 @@ function validateRegistrationLogin (req, res, next) {
 
 };
 
+function validateUpdSubscrip (req, res, next) {
+
+    const {error} = updSubscriptSchema.validate(req.body);
+
+    if(error) {
+      throw HttpErr(400, error.message);
+    };
+  
+    next();
+
+};
+
 
 module.exports = {
     validateRegistrationLogin,
+    validateUpdSubscrip,
   };
