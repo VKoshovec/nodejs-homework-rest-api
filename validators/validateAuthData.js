@@ -15,7 +15,7 @@ const regSchema = Joi.object({
 });
 
 
-function validateRegistration (req, res, next) {
+function validateRegistrationLogin (req, res, next) {
 
     const {error} = regSchema.validate(req.body);
 
@@ -29,5 +29,5 @@ function validateRegistration (req, res, next) {
 
 
 module.exports = {
-    validateRegistration,
+    validateRegistrationLogin,
   };
