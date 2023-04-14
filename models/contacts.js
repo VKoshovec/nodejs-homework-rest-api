@@ -1,8 +1,6 @@
-const { Schema, model, Types } = require('mongoose');
-const mongoose = require('mongoose')
+const { Schema, model} = require('mongoose');
 
-const contactsSchema = new Schema(
-    {
+const contactsSchema = new Schema({
         name: {
           type: String,
           required: [true, 'Set name for contact'],
@@ -17,22 +15,19 @@ const contactsSchema = new Schema(
           type: Boolean,
           default: false,
         },
-      }, { versionKey: false }
-);
+        owner: {
+          type: Schema.Types.ObjectId,
+          ref: 'user',
+        },
+}, { versionKey: false, timestamps: true });
 
 contactsSchema.post("save", (error, data, next)=> {
   error.status = 400;
   next();
 });
 
-//check valid id - if not - 400.
-const checkId = (contactId, errAction) => {
-  if( !Types.ObjectId.isValid( contactId ) ) throw errAction ;
-}
-
 const Contacts = model("contacts", contactsSchema);
 
 module.exports = {
-    Contacts,
-    checkId
+    Contacts
 };
