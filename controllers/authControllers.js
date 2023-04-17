@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const gravatar = require('gravatar');
 const fs = require('fs/promises');
 const path = require('path');
+const jimpOtimizer = require('../helpers/jimpOptimizer');
 
 const { SECRET_KEY } = process.env;
 
@@ -95,6 +96,8 @@ async function updateUserAvatar (req,res) {
     const { _id } = req.user;
 
     const { path: tempUpload, filename } = req.file;
+
+    jimpOtimizer(tempUpload);
 
     const avatarName = `${_id}_${filename}`;
 
