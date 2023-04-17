@@ -3,9 +3,13 @@ const HttpErr = require('../helpers/HttpErorr');
 const controlWrapper  = require('../helpers/controlsWrapper');
 const bcrpt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const gravatar = require('gravatar');
+const fs = require('fs/promises');
+const path = require('path');
 
 const { SECRET_KEY } = process.env;
 
+const avatarDir = path.join(__dirname, "../", "public", "avatars");
 
 async function registerUser (req, res) {
 
@@ -15,7 +19,9 @@ async function registerUser (req, res) {
     if (user) throw HttpErr(409, "Email in use") ;
 
     const soltPasw = await bcrpt.hash(password, 10);
-    const result = await Users.create({ password: soltPasw, email });
+    const avatarURL = gravatar.url(email);
+
+    const result = await Users.create({ password: soltPasw, email, avatarURL });
 
     res.status(201).json({ "user":
         {"email": result.email,
