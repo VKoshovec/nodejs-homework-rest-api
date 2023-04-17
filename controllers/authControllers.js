@@ -90,10 +90,31 @@ async function updateUserSubscript (req, res) {
 
 };
 
+async function updateUserAvatar (req,res) {
+
+    const { _id } = req.user;
+
+    const { path: tempUpload, filename } = req.file;
+
+    const avatarName = `${_id}_${filename}`;
+
+    const resultPath = path.join(avatarDir, avatarName);
+
+    await fs.rename(tempUpload, resultPath);
+
+    const avatarURL = path.join('avatars', avatarName);
+
+    await Users.findByIdAndUpdate(_id, { avatarURL });
+
+    res.json({avatarURL});
+
+};
+
 module.exports = {
     registerUser: controlWrapper(registerUser),
     loginUser: controlWrapper(loginUser),
     logoutUser: controlWrapper(logoutUser),
     currentUser: controlWrapper(currentUser),
     updateUserSubscript: controlWrapper(updateUserSubscript),
+    updateUserAvatar: controlWrapper(updateUserAvatar),
 };
