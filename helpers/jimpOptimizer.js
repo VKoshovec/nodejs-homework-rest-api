@@ -1,17 +1,13 @@
 const Jimp = require('jimp');
 
-function jimpOtimizer (file) {
-
-    Jimp.read(file, (err, avatar) => {
-
-        if(err) throw err;
-
-        avatar
-        .resize(250, 250);
-
-        console.log(avatar);
-    });
-
+async function jimpOtimizer (file) {
+    await Jimp.read(file)
+    .then((image)=>{
+        image.cover(250, 250, Jimp.HORIZONTAL_ALIGN_CENTER|Jimp.VERTICAL_ALIGN_MIDDLE).write(file);
+    })
+    .catch((error)=>{
+        throw error;
+    })
 };
 
 module.exports = jimpOtimizer;

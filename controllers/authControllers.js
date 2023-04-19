@@ -97,7 +97,7 @@ async function updateUserAvatar (req,res) {
 
     const { path: tempUpload, filename } = req.file;
 
-    jimpOtimizer(tempUpload);
+    await jimpOtimizer(tempUpload);
 
     const avatarName = `${_id}_${filename}`;
 
