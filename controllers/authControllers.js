@@ -7,6 +7,8 @@ const gravatar = require('gravatar');
 const fs = require('fs/promises');
 const path = require('path');
 const jimpOtimizer = require('../helpers/jimpOptimizer');
+const emailSender = require('../helpers/emailSender');
+const { nanoid } = require('nanoid');
 
 const { SECRET_KEY } = process.env;
 
@@ -22,7 +24,19 @@ async function registerUser (req, res) {
     const soltPasw = await bcrpt.hash(password, 10);
     const avatarURL = gravatar.url(email);
 
-    const result = await Users.create({ password: soltPasw, email, avatarURL });
+    const verificationToken = nanoid();
+
+    const result = await Users.create({ password: soltPasw, email, avatarURL, verificationToken });
+
+    const protokol = req.protokol;
+    const host = req.get('host');
+    const serverUrl = `${req.protocol}://${req.get('host')}`;
+
+    await emailSender({
+        to: email,
+        subject: "Your email varification",
+        html: `<a target="_blank" href="${serverUrl}/users/verify/${verificationToken}">Click to verify email</a>`
+    })
 
     res.status(201).json({ "user":
         {"email": result.email,
@@ -113,6 +127,23 @@ async function updateUserAvatar (req,res) {
 
 };
 
+async function verifyUserEmail (req, res) {
+
+    const { verificationToken } = req.params;
+
+    const user = await Users.findOne({verificationToken});
+
+    if(!user) { throw HttpErr(404) };
+
+    await Users.findByIdAndUpdate(user._id, { verify: true, verificationToken: "" });
+
+    res.status(200).json({
+        "message": 'Verification successful'
+    });
+}
+
+
+
 module.exports = {
     registerUser: controlWrapper(registerUser),
     loginUser: controlWrapper(loginUser),
@@ -120,4 +151,5 @@ module.exports = {
     currentUser: controlWrapper(currentUser),
     updateUserSubscript: controlWrapper(updateUserSubscript),
     updateUserAvatar: controlWrapper(updateUserAvatar),
+    verifyUserEmail: controlWrapper(verifyUserEmail)
 };
