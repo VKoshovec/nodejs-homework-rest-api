@@ -9,6 +9,8 @@ const path = require('path');
 const jimpOtimizer = require('../helpers/jimpOptimizer');
 const emailSender = require('../helpers/emailSender');
 const { nanoid } = require('nanoid');
+const sendLatter = require('../helpers/emailSender');
+const getCurrentServerUrl  = require('../helpers/getCurrentServerUrl')
 
 const { SECRET_KEY } = process.env;
 
@@ -28,9 +30,9 @@ async function registerUser (req, res) {
 
     const result = await Users.create({ password: soltPasw, email, avatarURL, verificationToken });
 
-    const protokol = req.protokol;
-    const host = req.get('host');
-    const serverUrl = `${req.protocol}://${req.get('host')}`;
+    const serverUrl = getCurrentServerUrl(req);
+
+    console.log(serverUrl); 
 
     await emailSender({
         to: email,
@@ -54,6 +56,8 @@ async function loginUser (req, res) {
    const checkPassword = await bcrpt.compare(password, user.password);
 
    if(!checkPassword) { throw HttpErr(401, "Email or password is wrong") };
+
+   if(!user.verify) { throw HttpErr(401, "Email not verify")}; 
 
    const payload = {
     id: user._id,
@@ -133,7 +137,7 @@ async function verifyUserEmail (req, res) {
 
     const user = await Users.findOne({verificationToken});
 
-    if(!user) { throw HttpErr(404) };
+    if(!user) { throw HttpErr(404, "User not found") };
 
     await Users.findByIdAndUpdate(user._id, { verify: true, verificationToken: "" });
 
@@ -142,6 +146,28 @@ async function verifyUserEmail (req, res) {
     });
 }
 
+async function repeatVerifyUserEmail (req, res) {
+
+    const { email } = req.body;
+
+    const user = await Users.findOne({ email });
+
+    if(!user) { throw HttpErr(404, "User not found") };
+
+    if(user.verify) { throw HttpErr(400, "Verification has already been passed")}; 
+
+    const serverUrl = getCurrentServerUrl(req);
+
+    await emailSender({
+        to: email,
+        subject: "Your email varification",
+        html: `<a target="_blank" href="${serverUrl}/users/verify/${user.verificationToken}">Click to verify email</a>`
+    });
+
+    res.status(200).json({
+        "message": "Verification email sent",
+    });
+};
 
 
 module.exports = {
@@ -151,5 +177,6 @@ module.exports = {
     currentUser: controlWrapper(currentUser),
     updateUserSubscript: controlWrapper(updateUserSubscript),
     updateUserAvatar: controlWrapper(updateUserAvatar),
-    verifyUserEmail: controlWrapper(verifyUserEmail)
+    verifyUserEmail: controlWrapper(verifyUserEmail),
+    repeatVerifyUserEmail: controlWrapper(repeatVerifyUserEmail),
 };

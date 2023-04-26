@@ -18,6 +18,13 @@ const updSubscriptSchema = Joi.object({
     subscription: Joi.any().valid('starter', 'pro', 'business').required(),
 }).required();
 
+const verifySchema = Joi.object({
+    email: Joi.string().required().messages({
+        "any.required": `missing required field email`,
+        "string.empty": `email cannot be empty`,
+        "string.base": `email must be string`,
+    }),
+}).required();
 
 function validateRegistrationLogin (req, res, next) {
 
@@ -43,8 +50,21 @@ function validateUpdSubscrip (req, res, next) {
 
 };
 
+function validateVerifyEmail (req, res, next) {
+
+    const {error} = verifySchema.validate(req.body);
+
+    if(error) {
+      throw HttpErr(400, error.message);
+    };
+  
+    next();
+
+};
+
 
 module.exports = {
     validateRegistrationLogin,
     validateUpdSubscrip,
+    validateVerifyEmail,
   };
