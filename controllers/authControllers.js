@@ -7,7 +7,6 @@ const gravatar = require('gravatar');
 const fs = require('fs/promises');
 const path = require('path');
 const jimpOtimizer = require('../helpers/jimpOptimizer');
-const emailSender = require('../helpers/emailSender');
 const { nanoid } = require('nanoid');
 const sendLatter = require('../helpers/emailSender');
 const getCurrentServerUrl  = require('../helpers/getCurrentServerUrl')
@@ -32,9 +31,7 @@ async function registerUser (req, res) {
 
     const serverUrl = getCurrentServerUrl(req);
 
-    console.log(serverUrl); 
-
-    await emailSender({
+    await sendLatter({
         to: email,
         subject: "Your email varification",
         html: `<a target="_blank" href="${serverUrl}/users/verify/${verificationToken}">Click to verify email</a>`
@@ -158,7 +155,7 @@ async function repeatVerifyUserEmail (req, res) {
 
     const serverUrl = getCurrentServerUrl(req);
 
-    await emailSender({
+    await sendLatter({
         to: email,
         subject: "Your email varification",
         html: `<a target="_blank" href="${serverUrl}/users/verify/${user.verificationToken}">Click to verify email</a>`
