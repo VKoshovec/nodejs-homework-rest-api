@@ -1,5 +1,5 @@
 const express = require('express');
-const { validateRegistrationLogin, validateUpdSubscrip } = require('../../validators/validateAuthData');
+const { validateRegistrationLogin, validateUpdSubscrip, validateVerifyEmail } = require('../../validators/validateAuthData');
 const controllers = require('../../controllers/authControllers');
 const authorization = require('../../middlewares/authorization');
 const upload = require('../../middlewares/uploads');
@@ -18,5 +18,9 @@ router.get("/current", authorization, controllers.currentUser);
 router.patch("/", authorization, validateUpdSubscrip, controllers.updateUserSubscript);
 
 router.patch("/avatars", authorization, upload.single("avatar"), controllers.updateUserAvatar);
+
+router.get("/verify/:verificationToken", controllers.verifyUserEmail);
+
+router.post("/verify", validateVerifyEmail, controllers.repeatVerifyUserEmail);
 
 module.exports = router;
